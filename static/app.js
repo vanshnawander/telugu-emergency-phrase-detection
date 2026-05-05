@@ -380,9 +380,76 @@
         document.body.classList.remove("alert-blink");
       }, 1500); // 1.5 seconds total blink duration
       
+      // Show emergency contact based on phrase category
+      showEmergencyContact(phrase);
+      
       // Increment phrase count
       phraseCount++;
       updatePhraseCount();
+    }
+
+    function showEmergencyContact(phrase) {
+      const medicalPhrases = [
+        "డాక్టర్‌ను కాల్ చేయండి త్వరగా",
+        "నేను అస్వస్థంగా ఉన్నాను",
+        "నాకు గుండె నొప్పి",
+        "నాకు శ్వాస ఆడటం లేదు",
+        "నాకు రక్తస్రావం అవుతోంది",
+        "నాకు స్పృహ లేదు",
+        "నాకు బాగోలేదు హాస్పిటల్ తీసుకెళ్లండి",
+        "శ్వాస తీసుకోవడం కష్టం అవుతోంది"
+      ];
+
+      const policePhrases = [
+        "పోలీస్ కి కాల్ చెయ్యి",
+        "పోలీసు కి కాల్ చేయండి",
+        "దారి ప్రమాదం జరిగింది",
+        "అగ్ని ప్రమాదం జరిగింది",
+        "నీరు మునిగిపోతున్నాను"
+      ];
+
+      const firePhrases = [
+        "అగ్ని ప్రమాదం జరిగింది"
+      ];
+
+      const womenPhrases = [
+        "మహిళ్లలు సహాయం చేయాలను"
+      ];
+
+      const childPhrases = [
+        "పిల్లలు సహాయం అవసరాలి"
+      ];
+
+      const disasterPhrases = [
+        "విపత్తి ప్రమాదం జరిగింది"
+      ];
+
+      let contactInfo = "";
+      
+      if (medicalPhrases.some(mp => phrase.includes(mp))) {
+        contactInfo = "🏥 CALL 108 (Medical Emergency) or 104 (Ambulance)";
+      } else if (policePhrases.some(pp => phrase.includes(pp))) {
+        contactInfo = "🚔 CALL 100 (Police) or 112 (Emergency Services)";
+      } else if (firePhrases.some(fp => phrase.includes(fp))) {
+        contactInfo = "🚒 CALL 101 (Fire Services) or 112 (Emergency Services)";
+      } else if (womenPhrases.some(wp => phrase.includes(wp))) {
+        contactInfo = "♀️ CALL 1091 (Women Helpline) or 181 (Women in Distress)";
+      } else if (childPhrases.some(cp => phrase.includes(cp))) {
+        contactInfo = "👶 CALL 1098 (Child Helpline) or 1090 (Emergency Childline)";
+      } else if (disasterPhrases.some(dp => phrase.includes(dp))) {
+        contactInfo = "🆘 CALL 1078 (Disaster Management) or 011-1078 (National Disaster)";
+      } else {
+        contactInfo = "🆘 CALL 108 (National Emergency) or 112 (Emergency Services)";
+      }
+
+      // Update alert box with contact information
+      if (alertBoxEl && matchedPhraseEl) {
+        alertBoxEl.innerHTML = `
+          🚨 Emergency phrase detected!
+          <div class="matched-phrase">Matched phrase: ${phrase}</div>
+          <div class="emergency-contact-info">${contactInfo}</div>
+        `;
+      }
     }
 
     function hideEmergencyAlert() {

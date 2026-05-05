@@ -17,7 +17,7 @@ class ServerConfig:
     # Model choices
     # parakeet_model: str = "nvidia/parakeet-tdt-0.6b-v3"
     indic_model: str = "ai4bharat/indic-conformer-600m-multilingual"
-    whisper_model_path: str = str(Path(__file__).resolve().parent.parent.parent / "whisper-tiny-telugu")
+    whisper_model_path: str = "vanshnawander/whisper-tiny-telugu"
     whisper_language: str = "telugu"
 
     # Decoding strategy

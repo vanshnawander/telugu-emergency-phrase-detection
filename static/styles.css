@@ -157,6 +157,28 @@ body { -webkit-font-smoothing: antialiased; }
   font-weight: 500;
   color: #b91c1c;
 }
+.emergency-contact-info {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 0.375rem;
+  border-left: 4px solid #d97706;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #3f3528;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .supported-list {
   margin: 0;
   padding-left: 1.25rem;
@@ -377,6 +399,82 @@ body.alert-blink {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1.5rem;
+}
+
+/* ── Emergency contacts ── */
+.emergency-contacts {
+  margin-bottom: 2rem;
+}
+.contacts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+.contact-card {
+  background: #fffdf8;
+  border: 1px solid #eadcc6;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+.contact-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.contact-icon {
+  font-size: 2rem;
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef3c7;
+  border-radius: 0.5rem;
+  flex-shrink: 0;
+}
+.contact-info {
+  flex: 1;
+}
+.contact-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #7c3e00;
+  margin-bottom: 0.5rem;
+}
+.contact-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #d97706;
+  margin-bottom: 0.25rem;
+}
+.contact-alt {
+  font-size: 0.875rem;
+  color: #3f3528;
+  opacity: 0.8;
+}
+
+/* Contact card specific colors */
+.medical-contact .contact-icon {
+  background: #e8f5e8;
+}
+.police-contact .contact-icon {
+  background: #e8f0ff;
+}
+.fire-contact .contact-icon {
+  background: #fee2e2;
+}
+.women-contact .contact-icon {
+  background: #fce7f3;
+}
+.child-contact .contact-icon {
+  background: #e0f2fe;
+}
+.disaster-contact .contact-icon {
+  background: #f3e5f5;
 }
 .phrase-category {
   background: #fffdf8;

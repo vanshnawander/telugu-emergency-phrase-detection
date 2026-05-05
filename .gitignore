@@ -10,3 +10,7 @@ wheels/
 .venv
 ref/ 
 *.wav
+
+*.aux 
+*.log 
+*.out 
