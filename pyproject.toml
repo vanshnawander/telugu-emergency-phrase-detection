@@ -1,0 +1,36 @@
+[project]
+name = "unified-asr-pipeline"
+version = "0.1.0"
+description = "simple pipeline which works for Hindi, Telugu and English"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "datasets>=4.5.0",
+    "torch>=2.10.0",
+    "torchaudio>=2.10.0",
+    "einops>=0.8.0",
+    "torchcodec>=0.10.0",
+    "nemo-toolkit[asr]>=2.6.1",
+    "onnxruntime>=1.23.2",
+    "onnxruntime-gpu>=1.23.2",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.12",
+    "numpy>=1.26.0",
+]
+
+
+
+[tool.uv]
+index-url = "https://download.pytorch.org/whl/cu130"
+extra-index-url = ["https://pypi.org/simple"]
+ 
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu130" }
+torchaudio = { index = "pytorch-cu130" }
+

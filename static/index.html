@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Telugu Emergency Alert System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/static/styles.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#fefce8', 100: '#fef3c7', 500: '#d97706', 600: '#b45309', 700: '#92400e' },
+            surface: { 50: '#f7f1e6', 100: '#f1e7d7', 200: '#e8dac4', 500: '#7c6f5b', 700: '#4a4032', 900: '#2a241b' },
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-surface-50 text-surface-900 min-h-screen font-sans">
+
+  <!-- Header -->
+  <header class="border-b border-surface-200 px-6 py-4">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Telugu Emergency Alert System</h1>
+      </div>
+      <div class="main-tabs">
+        <button class="main-tab active" data-tab="demo" onclick="switchMainTab('demo')">Demo</button>
+        <button class="main-tab" data-tab="phrases" onclick="switchMainTab('phrases')">Supported Phrases</button>
+        <button class="main-tab" data-tab="metrics" onclick="switchMainTab('metrics')">Metric Calculation</button>
+      </div>
+      <div id="status-badge" class="flex items-center gap-2 text-sm">
+        <span class="status-dot bg-amber-500"></span>
+        <span id="status-text">Connecting…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+    <!-- Demo Tab -->
+    <div id="tab-demo" class="tab-content">
+      <!-- Streaming Panel -->
+      <section class="panel">
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="text-sm font-medium">ASR Backend</span>
+          <div class="backend-tabs">
+            <button class="backend-tab active" data-backend="indic" onclick="selectBackend('indic')">IndicConformer</button>
+            <button class="backend-tab" data-backend="whisper" onclick="selectBackend('whisper')">Whisper Tiny Telugu</button>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <span class="text-sm font-medium">Debug Mode</span>
+          <div class="debug-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="debugMode" onchange="toggleDebugMode()">
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="toggle-label">Show continuous transcript</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4 mb-4">
+          <button id="btn-stream" class="record-btn" onclick="toggleStreaming()">
+            <span id="stream-icon" class="record-icon"></span>
+          </button>
+          <div>
+            <p id="stream-label" class="text-sm font-medium">Click to start streaming</p>
+            <p id="stream-timer" class="text-xs text-surface-500">00:00</p>
+          </div>
+        </div>
+
+        <!-- Waveform Visualizer -->
+        <div class="waveform-container mb-4">
+          <canvas id="waveform" height="60"></canvas>
+        </div>
+
+        <!-- Performance Indicators -->
+        <div class="performance-indicators mb-4">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-surface-500">Performance</span>
+            <span id="stream-latency" class="text-xs text-brand-500"></span>
+          </div>
+          <div class="performance-stats">
+            <div class="stat-item">
+              <span class="stat-label">Latency:</span>
+              <span id="latency-value">-- ms</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Phrases Detected:</span>
+              <span id="accuracy-value">0 phrases</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Processing Time:</span>
+              <span id="processing-value">-- ms</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transcript -->
+        <div class="transcript-box">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-xs font-semibold uppercase tracking-wider text-surface-500">Transcription</span>
+          </div>
+          <div id="stream-output" class="transcript-text">Start streaming to see transcript</div>
+        </div>
+      </section>
+
+      <!-- Trigger Word Detection -->
+      <section id="triggerDetection" class="panel trigger-panel">
+        <h2 class="text-lg font-semibold mb-4">Trigger Word Detection</h2>
+        <div id="trigger-status" class="trigger-status">
+          <div class="status-indicator">
+            <span class="trigger-dot"></span>
+            <span id="trigger-text">Waiting for trigger word...</span>
+          </div>
+        </div>
+        <div id="detected-triggers" class="detected-triggers">
+          <h3 class="text-md font-medium mb-2">Detected Trigger Words:</h3>
+          <ul id="trigger-list" class="trigger-list"></ul>
+        </div>
+      </section>
+
+      <!-- Alert Box -->
+      <section id="alertBox" class="alert hidden" role="alert" aria-live="assertive">
+        🚨 Emergency phrase detected!
+        <div id="matchedPhrase" class="matched-phrase"></div>
+      </section>
+    </div>
+
+    <!-- Supported Phrases Tab -->
+    <div id="tab-phrases" class="tab-content hidden">
+      <section class="panel">
+        <h2 class="text-lg font-semibold mb-4">Supported Emergency Phrases</h2>
+        <div class="phrases-intro">
+          <p class="text-sm text-surface-600 mb-4">
+            The system supports the following Telugu emergency phrases. When any of these phrases are detected, 
+            an emergency alert will be triggered automatically.
+          </p>
+        </div>
+        <div class="phrases-grid">
+          <div class="phrase-category">
+            <h3 class="category-title">Medical Emergency</h3>
+            <ul class="phrase-list medical-phrases"></ul>
+          </div>
+          <div class="phrase-category">
+            <h3 class="category-title">Accident/Emergency</h3>
+            <ul class="phrase-list accident-phrases"></ul>
+          </div>
+          <div class="phrase-category">
+            <h3 class="category-title">General Help</h3>
+            <ul class="phrase-list help-phrases"></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Metric Calculation Tab -->
+    <div id="tab-metrics" class="tab-content hidden">
+      <section class="panel">
+        <h2 class="text-lg font-semibold mb-4">Distance Metrics & Word Error Rate</h2>
+        
+        <div class="metrics-intro">
+          <p class="text-sm text-surface-600 mb-4">
+            Our system uses advanced distance metrics instead of direct string matching to improve accuracy 
+            and reduce false positives/negatives in emergency phrase detection.
+          </p>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <h3 class="metric-title">Levenshtein Distance</h3>
+            <div class="metric-description">
+              <p>Measures the minimum number of single-character edits required to change one word into another.</p>
+              <div class="metric-formula">
+                <strong>Formula:</strong> Distance ≤ min(3, ceil(max_len × 0.25))
+              </div>
+              <div class="metric-example">
+                <strong>Example:</strong> "డాక్టర్" vs "డాక్టర్‌ను" → Distance: 2 (Match!)
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <h3 class="metric-title">Windowed Matching</h3>
+            <div class="metric-description">
+              <p>Sliding window approach to handle partial ASR output and word order variations.</p>
+              <div class="metric-formula">
+                <strong>Window Size:</strong> Phrase length ± 1 word
+              </div>
+              <div class="metric-example">
+                <strong>Example:</strong> "హెల్ప్ చేయండి" detected in "దయచేసి హెల్ప్ చేయండి త్వరగా"
+              </div>
+            </div>
+          </div>
+
+          <div class="metric-card">
+            <h3 class="metric-title">Word Error Rate (WER)</h3>
+            <div class="metric-description">
+              <p>Comprehensive metric combining substitutions, deletions, and insertions.</p>
+              <div class="metric-formula">
+                <strong>WER = (S + D + I) / N</strong>
+                <br>Where: S=Substitutions, D=Deletions, I=Insertions, N=Reference words
+              </div>
+              <div class="metric-example">
+                <strong>Example:</strong> Reference: "అంబులెన్స్ పిలవండి" 
+                <br>Hypothesis: "అంబులెన్స్ పిలవండి రా" → WER: 25%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="metrics-comparison">
+          <h3 class="comparison-title">Approach Comparison</h3>
+          <div class="approach-cards">
+            <div class="approach-card">
+              <h4>Exact String Match</h4>
+              <div class="approach-description">
+                <p><strong>Method:</strong> Direct substring matching after text normalization.</p>
+                <p><strong>Limitations:</strong> Fails with minor spelling errors, word variations, or ASR transcription errors.</p>
+                <p><strong>Use Case:</strong> Simple applications with high-quality audio input.</p>
+              </div>
+            </div>
+            <div class="approach-card">
+              <h4>Distance Metrics Approach</h4>
+              <div class="approach-description">
+                <p><strong>Method:</strong> Combines Levenshtein distance, windowed matching, and normalization.</p>
+                <p><strong>Advantages:</strong> Handles transcription errors, word variations, and partial matches.</p>
+                <p><strong>Use Case:</strong> Real-world emergency systems where accuracy is critical.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
