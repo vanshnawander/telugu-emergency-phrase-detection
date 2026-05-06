@@ -50,6 +50,7 @@
 \author{Vansh Nawander\\
 \small{Roll Number: 2025701040}\\
 \small{Email: vansh.nawander@research.iiit.ac.in}\\
+\small{Project Github: https://github.com/vanshnawander/telugu-emergency-phrase-detection}\\
 \small{SMAI Assignment 3}}
 \date{\today}
 
@@ -59,13 +60,10 @@
 
 \section{Introduction}
 
-Emergency response systems require reliable and accurate detection of critical phrases spoken in regional languages. This project addresses the need for a Telugu-language emergency alert system that can detect emergency phrases in real-time audio streams using advanced Automatic Speech Recognition (ASR) models combined with sophisticated distance-based matching algorithms.
-
-The system is designed for deployment in emergency call centers, smart home devices, and mobile applications serving Telugu-speaking populations, providing immediate visual feedback when emergency phrases are detected.
+Emergency response systems require reliable and accurate detection of critical phrases spoken in regional languages. This project addresses the need for a Telugu-language emergency alert system that can detect emergency phrases in real-time audio streams using advanced Automatic Speech Recognition (ASR) models combined with distance-based matching algorithms to reduce the error rate what happens due to WER (Word Error Rate) of ASR models typically more in telugu ASR since, it has very high WER. 
 
 \section{Data}
-
-The system utilizes publicly available Telugu emergency phrase datasets and incorporates additional phrases collected from emergency response scenarios. The training data for the Whisper Tiny Telugu model was sourced from Kaggle datasets containing emergency and medical audio samples in Telugu language.
+The data here is mostly just the telugu emergency phrases list which can be used for matching with the speakers transcripts.
 
 The dataset includes:
 \begin{itemize}
@@ -112,16 +110,17 @@ The system follows a modular architecture with the following components:
 \caption{System Architecture Overview}
 \label{fig:architecture}
 \end{figure}
+The Entire project backend is inspired by mini sglang style engine for processing ASR in realtime and server setup.
 
 \subsection{ASR Models}
 
 The system employs two ASR models:
 
 \subsubsection{IndicConformer 600M}
-State-of-the-art ASR model specifically designed for Indian languages with CTC decoder for optimal performance on Telugu speech.
+State-of-the-art ASR model specifically designed for Indian languages with CTC decoder for optimal performance on Telugu speech. The model is one of the best open source models for telugu and have not found any other model in opensource ecosystem which has this quality of response.
 
 \subsubsection{Whisper Tiny Telugu}
-Fine-tuned version of OpenAI's Whisper model specialized for emergency phrase detection. The ASR training was conducted prior to this project, and the pre-trained model is being utilized for this application.
+This is a finetuned version of whisper tiny. I had finetuned this for one of my prior research works, This model has a very high error rate, and fails espically when streaming tokens, faster whisper helps but it is not supported as of now with cuda 13 binaries which i have in my working environment. neverthless this model has better WER than original whisper, but still doesn't produce good output quality.
 
 \subsection{Distance-Based Matching}
 
@@ -154,65 +153,39 @@ The system provides a three-tab web interface:
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{demo_image.png}
+\includegraphics[width=0.8\textwidth]{demo-image.png}
 \caption{Demo Interface Showing Real-time Emergency Detection}
 \label{fig:demo}
 \end{figure}
 
-\section{Results}
-
-The Whisper Tiny Telugu model demonstrates significant performance on emergency phrase detection:
-
-\begin{table}[h]
-\centering
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Metric} & \textbf{Value} & \textbf{Description} \\
-\midrule
-WER on Emergency Phrases & 15.2\% & Word Error Rate on test set \\
-Detection Latency & 285ms & Average time to detect emergency phrase \\
-False Positive Rate & 8.3\% & Incorrect emergency detections \\
-Accuracy & 91.7\% & Correct emergency phrase identification \\
-\bottomrule
-\end{tabular}
-\caption{Whisper Tiny Telugu Performance Results}
-\label{tab:results}
-\end{table}
 
 The distance-based matching approach provides significant improvements over exact string matching, with a 40\% reduction in false positives and 15\% improvement in overall detection accuracy.
 
 \section{Limitations}
 
-\subsection{Whisper Tiny Model Limitations}
-
 The Whisper Tiny model exhibits several limitations in this context:
 \begin{itemize}
-    \item High error rate (15.2\% WER) on Telugu emergency phrases
     \item Limited vocabulary for specialized medical terminology
     \item Performance degradation with background noise
-    \item Latency issues in real-time applications
+    \item streaming for models espically whisper tiny can be a issue as output quality degardes. 
+    \item indic conformer needs gpu to process speech in real time.
 \end{itemize}
 
-\subsection{System Limitations}
 
+\item the demo video is posted on github in the same repository.
+
+
+
+
+\section{Acknowldgements} 
 \begin{itemize}
-    \item Dependence on pre-trained ASR models without fine-tuning for this specific domain
-    \item Limited to 28 pre-defined emergency phrases
-    \item No support for dialect variations in Telugu
-    \item Requires stable internet connection for ASR processing
+\item AI was very helpful in creating frontend as well as the engine code. 
+\item I also used AI to format the report
 \end{itemize}
-
-\textit{Note: This work is ongoing. The ASR training was conducted prior to this project, and the current implementation utilizes existing pre-trained models. Future work includes domain-specific fine-tuning and expansion of the phrase database.}
-
-\section{References}
 
 \begin{thebibliography}{9}
 \bibitem{whisper} OpenAI. \textit{Whisper: Robust Speech Recognition via Large-Scale Weak Supervision}. arXiv preprint arXiv:2212.04356, 2022.
 \bibitem{indicconformer} AI4Bharat. \textit{IndicConformer: A Conformer-based ASR Model for Indian Languages}. arXiv preprint arXiv:2305.14567, 2023.
-\bibitem{kaggle} Kaggle. \textit{Telugu Emergency Speech Dataset}. 2023.
-\bibitem{levenshtein} Levenshtein, V. I. \textit{Binary codes capable of correcting deletions, insertions, and reversals}. Soviet Physics Doklady, 10:707--710, 1966.
-\bibitem{distance} Navarro, G. \textit{A guided tour to approximate string matching}. ACM Computing Surveys, 33(1):31--88, 2001.
 
 \end{thebibliography}
-
 \end{document}
